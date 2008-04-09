@@ -404,12 +404,11 @@ static void prepare_generation(ayemu_ay_t *ay)
  * Return value: pointer to next data in output sound buffer
  * \retval \b 1 if OK, \b 0 if error occures.
  */
-void *ayemu_gen_sound(ayemu_ay_t *ay, void *buff, size_t sound_bufsize)
+void *ayemu_gen_sound(ayemu_ay_t *ay, void *buff, size_t frame_count)
 {
 	int mix_l, mix_r;
 	int tmpvol;
 	int m;
-	int snd_numcount;
 	unsigned char *sound_buf = buff;
 
 	if (!check_magic(ay))
@@ -417,8 +416,7 @@ void *ayemu_gen_sound(ayemu_ay_t *ay, void *buff, size_t sound_bufsize)
 
 	prepare_generation(ay);
 
-	snd_numcount = sound_bufsize / (ay->sndfmt.channels * (ay->sndfmt.bpc >> 3));
-	while (snd_numcount-- > 0) {
+	while (frame_count-- > 0) {
 		mix_l = mix_r = 0;
 		
 		for (m = 0 ; m < ay->ChipTacts_per_outcount ; m++) {
