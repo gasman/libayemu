@@ -147,6 +147,14 @@ void ayemu_reset(ayemu_ay_t *ay)
 	ay->bit_a = ay->bit_b = ay->bit_c = ay->bit_n = 0;
 	ay->env_pos = ay->EnvNum = 0;
 	ay->Cur_Seed = 0xffff;
+
+	ay->regs.tone_a = ay->regs.tone_b = ay->regs.tone_c = 0;
+	ay->regs.noise = 0;
+	ay->regs.R7_tone_a = ay->regs.R7_tone_b = ay->regs.R7_tone_c = 0;
+	ay->regs.R7_noise_a = ay->regs.R7_noise_b = ay->regs.R7_noise_c = 0;
+	ay->regs.vol_a = ay->regs.vol_b = ay->regs.vol_c = 0;
+	ay->regs.env_a = ay->regs.env_b = ay->regs.env_c = 0;
+	ay->regs.env_freq = ay->regs.env_style = 0;
 }
 
 
