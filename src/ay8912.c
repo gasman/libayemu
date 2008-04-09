@@ -409,7 +409,8 @@ void *ayemu_gen_sound(ayemu_ay_t *ay, void *buff, size_t frame_count)
 	int mix_l, mix_r;
 	int tmpvol;
 	int m;
-	unsigned char *sound_buf = buff;
+	unsigned char *char_buf = (unsigned char *)buff;
+	unsigned short *short_buf = (unsigned short *)buff;
 
 	if (!check_magic(ay))
 		return 0;
@@ -474,19 +475,17 @@ void *ayemu_gen_sound(ayemu_ay_t *ay, void *buff, size_t frame_count)
 		if (ay->sndfmt.bpc == 8) {
 			mix_l = (mix_l >> 8) | 128; /* 8 bit sound */
 			mix_r = (mix_r >> 8) | 128;
-			*sound_buf++ = mix_l;
+			*char_buf++ = mix_l;
 			if (ay->sndfmt.channels != 1)
-				*sound_buf++ = mix_r;
+				*char_buf++ = mix_r;
 		} else {
-			*sound_buf++ = mix_l & 0x00FF; /* 16 bit sound */
-			*sound_buf++ = (mix_l >> 8);
+			*short_buf++ = mix_l; /* 16 bit sound */
 			if (ay->sndfmt.channels != 1) {
-				*sound_buf++ = mix_r & 0x00FF;
-				*sound_buf++ = (mix_r >> 8);
+				*short_buf++ = mix_r;
 			}
 		}
 	}
-	return sound_buf;
+	return (ay->sndfmt.bpc == 8 ? (void *)char_buf : (void *)short_buf);
 }
 
 /** Free all data allocated by emulator
