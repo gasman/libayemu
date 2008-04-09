@@ -96,20 +96,20 @@ static void gen_env()
 		vol = (env & 4)? -1 : 32;
 		for (pos = 0; pos < 128; pos++) {
 			if (!hold) {
-	vol += dir;
-	if (vol < 0 || vol >= 32) {
-		if ( env & 8 ) {
-			if ( env & 2 ) dir = -dir;
-			vol = (dir > 0 )? 0:31;
-			if ( env & 1 ) {
-				hold = 1;
-				vol = ( dir > 0 )? 31:0;
-			}
-		} else {
-			vol = 0;
-			hold = 1;
-		}
-	}
+				vol += dir;
+				if (vol < 0 || vol >= 32) {
+					if ( env & 8 ) {
+						if ( env & 2 ) dir = -dir;
+						vol = (dir > 0 )? 0:31;
+						if ( env & 1 ) {
+							hold = 1;
+							vol = ( dir > 0 )? 31:0;
+						}
+					} else {
+						vol = 0;
+						hold = 1;
+					}
+				}
 			}
 			Envelope[env][pos] = vol;
 		}
@@ -178,7 +178,7 @@ static void set_table_ym (ayemu_ay_t *ay, int tbl[32])
 /** Set chip type. */
 int ayemu_set_chip_type(ayemu_ay_t *ay, ayemu_chip_t type, int *custom_table)
 {
-if (!check_magic(ay))
+	if (!check_magic(ay))
 		return 0;
 
 	if (!(type == AYEMU_AY_CUSTOM || type == AYEMU_YM_CUSTOM) && custom_table != NULL) {
@@ -382,7 +382,7 @@ static void prepare_generation(ayemu_ay_t *ay)
 		for (n = 0; n < 32; n++) {
 			vol = ay->table[n];
 			for (m=0; m < 6; m++)
-	ay->vols[m][n] = (int) (((double) vol * ay->eq[m]) / 100);
+				ay->vols[m][n] = (int) (((double) vol * ay->eq[m]) / 100);
 		}
 	}
 
@@ -423,50 +423,50 @@ void *ayemu_gen_sound(ayemu_ay_t *ay, void *buff, size_t sound_bufsize)
 		
 		for (m = 0 ; m < ay->ChipTacts_per_outcount ; m++) {
 			if (++ay->cnt_a >= ay->regs.tone_a) {
-	ay->cnt_a = 0;
-	ay->bit_a = ! ay->bit_a;
+				ay->cnt_a = 0;
+				ay->bit_a = ! ay->bit_a;
 			}
 			if (++ay->cnt_b >= ay->regs.tone_b) {
-	ay->cnt_b = 0;
-	ay->bit_b = ! ay->bit_b;
+				ay->cnt_b = 0;
+				ay->bit_b = ! ay->bit_b;
 			}
 			if (++ay->cnt_c >= ay->regs.tone_c) {
-	ay->cnt_c = 0;
-	ay->bit_c = ! ay->bit_c;
+				ay->cnt_c = 0;
+				ay->bit_c = ! ay->bit_c;
 			}
 			
 			/* GenNoise (c) Hacker KAY & Sergey Bulba */
 			if (++ay->cnt_n >= (ay->regs.noise * 2)) {
-	ay->cnt_n = 0;
-	ay->Cur_Seed = (ay->Cur_Seed * 2 + 1) ^ \
-		(((ay->Cur_Seed >> 16) ^ (ay->Cur_Seed >> 13)) & 1); 
-	ay->bit_n = ((ay->Cur_Seed >> 16) & 1);
+				ay->cnt_n = 0;
+				ay->Cur_Seed = (ay->Cur_Seed * 2 + 1) ^ \
+					(((ay->Cur_Seed >> 16) ^ (ay->Cur_Seed >> 13)) & 1); 
+				ay->bit_n = ((ay->Cur_Seed >> 16) & 1);
 			}
 			
 			if (++ay->cnt_e >= ay->regs.env_freq) {
-	ay->cnt_e = 0;
-	if (++ay->env_pos > 127)
-		ay->env_pos = 64;
+				ay->cnt_e = 0;
+				if (++ay->env_pos > 127)
+					ay->env_pos = 64;
 			}
 
 #define ENVVOL Envelope [ay->regs.env_style][ay->env_pos]
 
 			if ((ay->bit_a | !ay->regs.R7_tone_a) & (ay->bit_n | !ay->regs.R7_noise_a)) {
-	tmpvol = (ay->regs.env_a)? ENVVOL : ay->regs.vol_a * 2 + 1;
-	mix_l += ay->vols[0][tmpvol];
-	mix_r += ay->vols[1][tmpvol];
+				tmpvol = (ay->regs.env_a)? ENVVOL : ay->regs.vol_a * 2 + 1;
+				mix_l += ay->vols[0][tmpvol];
+				mix_r += ay->vols[1][tmpvol];
 			}
 			
 			if ((ay->bit_b | !ay->regs.R7_tone_b) & (ay->bit_n | !ay->regs.R7_noise_b)) {
-	tmpvol =(ay->regs.env_b)? ENVVOL :  ay->regs.vol_b * 2 + 1;
-	mix_l += ay->vols[2][tmpvol];
-	mix_r += ay->vols[3][tmpvol];
+				tmpvol =(ay->regs.env_b)? ENVVOL :  ay->regs.vol_b * 2 + 1;
+				mix_l += ay->vols[2][tmpvol];
+				mix_r += ay->vols[3][tmpvol];
 			}
 			
 			if ((ay->bit_c | !ay->regs.R7_tone_c) & (ay->bit_n | !ay->regs.R7_noise_c)) {
-	tmpvol = (ay->regs.env_c)? ENVVOL : ay->regs.vol_c * 2 + 1;
-	mix_l += ay->vols[4][tmpvol];
-	mix_r += ay->vols[5][tmpvol];
+				tmpvol = (ay->regs.env_c)? ENVVOL : ay->regs.vol_c * 2 + 1;
+				mix_l += ay->vols[4][tmpvol];
+				mix_r += ay->vols[5][tmpvol];
 			}			
 		} /* end for (m=0; ...) */
 		
@@ -478,13 +478,13 @@ void *ayemu_gen_sound(ayemu_ay_t *ay, void *buff, size_t sound_bufsize)
 			mix_r = (mix_r >> 8) | 128;
 			*sound_buf++ = mix_l;
 			if (ay->sndfmt.channels != 1)
-	*sound_buf++ = mix_r;
+				*sound_buf++ = mix_r;
 		} else {
 			*sound_buf++ = mix_l & 0x00FF; /* 16 bit sound */
 			*sound_buf++ = (mix_l >> 8);
 			if (ay->sndfmt.channels != 1) {
-	*sound_buf++ = mix_r & 0x00FF;
-	*sound_buf++ = (mix_r >> 8);
+				*sound_buf++ = mix_r & 0x00FF;
+				*sound_buf++ = (mix_r >> 8);
 			}
 		}
 	}
