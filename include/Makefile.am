@@ -7,4 +7,5 @@ libayemuincludedir      = $(includedir)
 libayemuinclude_HEADERS =	\
 	ayemu.h			\
 	ayemu_8912.h		\
-	ayemu_vtxfile.h
+	ayemu_vtxfile.h		\
+	ayemu_player.h
