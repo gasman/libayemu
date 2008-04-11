@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include "ayemu.h"
 
-#define AUDIO_FREQ 44100
-#define AUDIO_CHANS 2
-#define AUDIO_BITS 16
 #define AY_FREQ 1773400
 #define INTERRUPT_FREQ 50
 #define TICK_MULTIPLIER 8
@@ -44,11 +41,11 @@ int vtx_close( void *userdata )
 }
 
 
-int ayemu_player_open_vtx( const char *filename, ayemu_player_t *player ) {
+int ayemu_player_open_vtx( const char *filename, ayemu_player_sndfmt_t *format, ayemu_player_t *player ) {
 	VTX_PLAYER_STATE *vtx_state;
 	
 	ayemu_init( &player->ay );
-	ayemu_set_sound_format( &player->ay, AUDIO_FREQ, AUDIO_CHANS, AUDIO_BITS );
+	ayemu_set_sound_format( &player->ay, format->freq, format->channels, format->bpc );
 	ayemu_set_chip_type( &player->ay, AYEMU_AY, NULL );
 	ayemu_set_chip_freq( &player->ay, AY_FREQ );
 	ayemu_set_stereo( &player->ay, AYEMU_ACB, NULL );
@@ -58,7 +55,7 @@ int ayemu_player_open_vtx( const char *filename, ayemu_player_t *player ) {
 	ayemu_vtx_open( &vtx_state->vtx, filename );
 	ayemu_vtx_load_data( &vtx_state->vtx );
 	
-	player->ticks_per_interrupt = (AUDIO_FREQ << TICK_MULTIPLIER) / INTERRUPT_FREQ;
+	player->ticks_per_interrupt = (format->freq << TICK_MULTIPLIER) / INTERRUPT_FREQ;
 	player->ticks_to_next_interrupt = 0;
 	player->userdata = vtx_state;
 	player->play_frame = &vtx_play_frame;

@@ -11,6 +11,14 @@ BEGIN_C_DECLS
  */
 /*@{*/
 
+/** Output sound format */
+typedef struct
+{
+	int freq;			/**< sound freq */
+	int channels;			/**< channels (1-mono, 2-stereo) */
+	int bpc;			/**< bits (8 or 16) */
+}
+ayemu_player_sndfmt_t;
 
 /** structure for AY playback handler
  * \internal
@@ -33,7 +41,7 @@ typedef struct
     \arg \c player - pointer to ayemu_player_t structure
     \return Return true if success, else false
 */
-EXTERN int ayemu_player_open_vtx( const char *filename, ayemu_player_t *player );
+EXTERN int ayemu_player_open_vtx( const char *filename, ayemu_player_sndfmt_t *format, ayemu_player_t *player );
   
 /** Fill a buffer with the required number of samples of AY output
     \arg \c player - pointer to ayemu_player_t structure
