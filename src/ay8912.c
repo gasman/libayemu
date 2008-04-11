@@ -359,6 +359,69 @@ void ayemu_set_regs(ayemu_ay_t *ay, unsigned char *regs)
 	}
 }
 
+/** Assign value for a single AY register.
+ */
+void ayemu_set_reg(ayemu_ay_t *ay, int reg, unsigned char value)
+{
+	if (!check_magic(ay)) return;
+
+	switch (reg) {
+		case 0:
+			ay->regs.tone_a = (ay->regs.tone_a & 0x0f00) | value;
+			break;
+		case 1:
+			ay->regs.tone_a = (ay->regs.tone_a & 0x00ff) | ((value & 0x0f) << 8);
+			break;
+		case 2:
+			ay->regs.tone_b = (ay->regs.tone_b & 0x0f00) | value;
+			break;
+		case 3:
+			ay->regs.tone_b = (ay->regs.tone_b & 0x00ff) | ((value & 0x0f) << 8);
+			break;
+		case 4:
+			ay->regs.tone_c = (ay->regs.tone_c & 0x0f00) | value;
+			break;
+		case 5:
+			ay->regs.tone_c = (ay->regs.tone_c & 0x00ff) | ((value & 0x0f) << 8);
+			break;
+		case 6:
+			ay->regs.noise = value & 0x1f;
+			break;
+		case 7:
+			ay->regs.R7_tone_a  = ! (value & 0x01);
+			ay->regs.R7_tone_b  = ! (value & 0x02);
+			ay->regs.R7_tone_c  = ! (value & 0x04);
+		
+			ay->regs.R7_noise_a = ! (value & 0x08);
+			ay->regs.R7_noise_b = ! (value & 0x10);
+			ay->regs.R7_noise_c = ! (value & 0x20);
+
+			break;
+		case 8:
+			ay->regs.vol_a = value & 0x0f;
+			ay->regs.env_a = value & 0x10;
+			break;
+		case 9:
+			ay->regs.vol_b = value & 0x0f;
+			ay->regs.env_b = value & 0x10;
+			break;
+		case 10:
+			ay->regs.vol_c = value & 0x0f;
+			ay->regs.env_c = value & 0x10;
+			break;
+		case 11:
+			ay->regs.env_freq = (ay->regs.env_freq & 0xff00) | value;
+			break;
+		case 12:
+			ay->regs.env_freq = (ay->regs.env_freq & 0x00ff) | (value << 8);
+			break;
+		case 13:
+			ay->regs.env_style = value & 0x0f;
+			ay->env_pos = ay->cnt_e = 0;
+			break;
+	}
+}
+
 
 static void prepare_generation(ayemu_ay_t *ay)
 {

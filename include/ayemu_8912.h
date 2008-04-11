@@ -140,6 +140,9 @@ ayemu_set_sound_format (ayemu_ay_t *ay, int freq, int chans, int bits);
 EXTERN void 
 ayemu_set_regs (ayemu_ay_t *ay, unsigned char *regs);
 
+EXTERN void 
+ayemu_set_reg (ayemu_ay_t *ay, int reg, unsigned char value);
+
 EXTERN void*
 ayemu_gen_sound (ayemu_ay_t *ay, void *buf, size_t frame_count);
 

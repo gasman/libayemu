@@ -35,13 +35,21 @@ typedef struct
 	int ticks_to_next_interrupt;
 } ayemu_player_t;
 
-
 /** Open vtx file and initialise player
     \arg \c filename - filename of vtx file
-    \arg \c player - pointer to ayemu_player_t structure
+    \arg \c format - pointer to ayemu_player_sndfmt_t structure specifying required audio output format
+    \arg \c player - pointer to ayemu_player_t structure to be initialised
     \return Return true if success, else false
 */
 EXTERN int ayemu_player_open_vtx( const char *filename, ayemu_player_sndfmt_t *format, ayemu_player_t *player );
+
+/** Open psg file and initialise player
+    \arg \c filename - filename of psg file
+    \arg \c format - pointer to ayemu_player_sndfmt_t structure specifying required audio output format
+    \arg \c player - pointer to ayemu_player_t structure to be initialised
+    \return Return true if success, else false
+*/
+EXTERN int ayemu_player_open_psg( const char *filename, ayemu_player_sndfmt_t *format, ayemu_player_t *player );
   
 /** Fill a buffer with the required number of samples of AY output
     \arg \c player - pointer to ayemu_player_t structure
