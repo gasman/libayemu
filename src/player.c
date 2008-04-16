@@ -43,48 +43,17 @@ int vtx_close( void *userdata )
 	return 1;
 }
 
-/* PSG structures / callbacks */
-typedef struct
-{
-	FILE *fp;			/**< open .psg file pointer */
-	unsigned char frames_to_skip;	/**< number of interrupt frames to wait before processing the next batch of registers */
-} PSG_PLAYER_STATE;
 
 int psg_play_frame( void *userdata, ayemu_ay_t *ay)
 {
-	PSG_PLAYER_STATE *psg = (PSG_PLAYER_STATE *)userdata;
-	int cmd;
-
-	if (psg->frames_to_skip) {
-		psg->frames_to_skip--;
-		return 1;
-	}
-
-	while (!feof( psg->fp ) && (cmd = fgetc( psg->fp )) < 16) {
-		ayemu_set_reg( ay, cmd, fgetc( psg->fp ) );
-	}
-
-	if (feof( psg->fp ) || cmd == 0xfd) {
-		/* end of music */
-		return 0;
-	} else if (cmd == 0xfe) {
-		/* multiple end of interrupt (pause for set number of frames) */
-		psg->frames_to_skip = fgetc( psg->fp );
-		return 1;
-	} else if (cmd == 0xff) {
-		/* end of interrupt */
-		return 1;
-	} else {
-		/* unrecognised command */
-		fprintf( stderr, "psg_play_frame: warning: unrecognised command %d\n", cmd );
-		return 1;
-	}
+	ayemu_psg_t *psg = (ayemu_psg_t *)userdata;
+	return ayemu_psg_play_frame( psg, ay );
 }
 
 int psg_close( void *userdata )
 {
-	PSG_PLAYER_STATE *psg = (PSG_PLAYER_STATE *)userdata;
-	fclose( psg->fp );
+	ayemu_psg_t *psg = (ayemu_psg_t *)userdata;
+	ayemu_psg_close( psg );
 	free( psg );
 	return 1;
 }
@@ -112,29 +81,15 @@ int ayemu_player_open_vtx( const char *filename, ayemu_player_sndfmt_t *format, 
 }
 
 int ayemu_player_open_psg( const char *filename, ayemu_player_sndfmt_t *format, ayemu_player_t *player ) {
-	const char *expected_header = "PSG\x1a";
-	char header[4];
 	
-	PSG_PLAYER_STATE *psg;
+	ayemu_psg_t *psg;
 	
-	psg = malloc( sizeof(PSG_PLAYER_STATE) );
-	if ((psg->fp = fopen (filename, "rb")) == NULL) {
-		fprintf( stderr, "ayemu_player_open_psg: Cannot open file %s: %s\n",
-			filename, strerror( errno ) );
+	psg = malloc( sizeof(ayemu_psg_t) );
+	
+	if (!ayemu_psg_open( psg, filename )) {
 		free( psg );
 		return 0;
 	}
-	/* read psg header */
-	fread( header, 4, 1, psg->fp );
-	if (strncmp( header, expected_header, 4 ) != 0) {
-		fprintf( stderr, "ayemu_player_open_psg: %s is not a valid PSG file\n",
-			filename );
-		fclose( psg->fp );
-		free( psg );
-		return 0;
-	}
-	
-	psg->frames_to_skip = 0;
 
 	ayemu_init( &player->ay );
 	ayemu_set_sound_format( &player->ay, format->freq, format->channels, format->bpc );
