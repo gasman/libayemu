@@ -9,4 +9,5 @@ libayemuinclude_HEADERS =	\
 	ayemu_8912.h		\
 	ayemu_vtxfile.h		\
 	ayemu_psgfile.h		\
+	ayemu_stcfile.h		\
 	ayemu_player.h

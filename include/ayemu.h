@@ -88,6 +88,7 @@ typedef signed int	Sint32;
 #include "ayemu_8912.h"
 #include "ayemu_vtxfile.h"
 #include "ayemu_psgfile.h"
+#include "ayemu_stcfile.h"
 #include "ayemu_player.h"
 
 #endif

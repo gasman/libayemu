@@ -58,6 +58,27 @@ int psg_close( void *userdata )
 	return 1;
 }
 
+int stc_play_frame( void *userdata, ayemu_ay_t *ay)
+{
+	unsigned char ay_regs[14];
+	ayemu_stc_t *stc = (ayemu_stc_t *)userdata;
+	
+	if (ayemu_stc_get_frame( stc, ay_regs )) {
+		ayemu_set_regs( ay, ay_regs );
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int stc_close( void *userdata )
+{
+	ayemu_stc_t *stc = (ayemu_stc_t *)userdata;
+	ayemu_stc_close( stc );
+	free( stc );
+	return 1;
+}
+
 int ayemu_player_open_vtx( const char *filename, ayemu_player_sndfmt_t *format, ayemu_player_t *player ) {
 	VTX_PLAYER_STATE *vtx_state;
 	
@@ -102,6 +123,31 @@ int ayemu_player_open_psg( const char *filename, ayemu_player_sndfmt_t *format, 
 	player->userdata = psg;
 	player->play_frame = &psg_play_frame;
 	player->close = &psg_close;
+	return 1;
+}
+
+int ayemu_player_open_stc( const char *filename, ayemu_player_sndfmt_t *format, ayemu_player_t *player ) {
+	
+	ayemu_stc_t *stc;
+	
+	stc = malloc( sizeof(ayemu_stc_t) );
+	
+	if (!ayemu_stc_open( stc, filename )) {
+		free( stc );
+		return 0;
+	}
+
+	ayemu_init( &player->ay );
+	ayemu_set_sound_format( &player->ay, format->freq, format->channels, format->bpc );
+	ayemu_set_chip_type( &player->ay, AYEMU_AY, NULL );
+	ayemu_set_chip_freq( &player->ay, AY_FREQ );
+	ayemu_set_stereo( &player->ay, AYEMU_ACB, NULL );	
+	
+	player->ticks_per_interrupt = (format->freq << TICK_MULTIPLIER) / INTERRUPT_FREQ;
+	player->ticks_to_next_interrupt = 0;
+	player->userdata = stc;
+	player->play_frame = &stc_play_frame;
+	player->close = &stc_close;
 	return 1;
 }
 
